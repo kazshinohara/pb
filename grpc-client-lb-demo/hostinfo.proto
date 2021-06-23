@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option go_package = "github.com/kazshinohara/pb/grpc-client-lb-demo";
+
+import "google/protobuf/empty.proto";
+
+service Tester {
+  rpc GetHostInfo (google.protobuf.Empty) returns (HostInfo) {}
+}
+
+message HostInfo {
+  string hostname_and_ip = 1;
+}
