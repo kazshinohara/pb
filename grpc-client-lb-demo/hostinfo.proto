@@ -9,5 +9,5 @@ service Tester {
 }
 
 message HostInfo {
-  string hostname_and_ip = 1;
+  string hostname = 1;
 }
