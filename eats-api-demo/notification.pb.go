@@ -2,15 +2,11 @@
 // versions:
 // 	protoc-gen-go v1.26.0-devel
 // 	protoc        v3.17.3
-// source: notification_server.proto
+// source: notification.proto
 
-package proto
+package eats_api_demo
 
 import (
-	context "context"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -163,10 +159,10 @@ var file_notification_proto_rawDesc = []byte{
 	0x74, 0x69, 0x6f, 0x6e, 0x12, 0x14, 0x2e, 0x4e, 0x6f, 0x74, 0x69, 0x66, 0x69, 0x63, 0x61, 0x74,
 	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x12, 0x2e, 0x4e, 0x6f, 0x74,
 	0x69, 0x66, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x22, 0x00,
-	0x30, 0x01, 0x42, 0x30, 0x5a, 0x2e, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d,
-	0x2f, 0x6b, 0x61, 0x7a, 0x73, 0x68, 0x69, 0x6e, 0x6f, 0x68, 0x61, 0x72, 0x61, 0x2f, 0x63, 0x6c,
-	0x6f, 0x75, 0x64, 0x72, 0x75, 0x6e, 0x2d, 0x68, 0x61, 0x6e, 0x64, 0x73, 0x6f, 0x6e, 0x2f, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x30, 0x01, 0x42, 0x2a, 0x5a, 0x28, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d,
+	0x2f, 0x6b, 0x61, 0x7a, 0x73, 0x68, 0x69, 0x6e, 0x6f, 0x68, 0x61, 0x72, 0x61, 0x2f, 0x70, 0x62,
+	0x2f, 0x65, 0x61, 0x74, 0x73, 0x2d, 0x61, 0x70, 0x69, 0x2d, 0x64, 0x65, 0x6d, 0x6f, 0x62, 0x06,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -245,111 +241,4 @@ func file_notification_proto_init() {
 	file_notification_proto_rawDesc = nil
 	file_notification_proto_goTypes = nil
 	file_notification_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// NotificationClient is the client API for Notification service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type NotificationClient interface {
-	GetNotification(ctx context.Context, in *NotificationRequest, opts ...grpc.CallOption) (Notification_GetNotificationClient, error)
-}
-
-type notificationClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewNotificationClient(cc grpc.ClientConnInterface) NotificationClient {
-	return &notificationClient{cc}
-}
-
-func (c *notificationClient) GetNotification(ctx context.Context, in *NotificationRequest, opts ...grpc.CallOption) (Notification_GetNotificationClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_Notification_serviceDesc.Streams[0], "/Notification/GetNotification", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &notificationGetNotificationClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type Notification_GetNotificationClient interface {
-	Recv() (*NotificationReply, error)
-	grpc.ClientStream
-}
-
-type notificationGetNotificationClient struct {
-	grpc.ClientStream
-}
-
-func (x *notificationGetNotificationClient) Recv() (*NotificationReply, error) {
-	m := new(NotificationReply)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-// NotificationServer is the server API for Notification service.
-type NotificationServer interface {
-	GetNotification(*NotificationRequest, Notification_GetNotificationServer) error
-}
-
-// UnimplementedNotificationServer can be embedded to have forward compatible implementations.
-type UnimplementedNotificationServer struct {
-}
-
-func (*UnimplementedNotificationServer) GetNotification(*NotificationRequest, Notification_GetNotificationServer) error {
-	return status.Errorf(codes.Unimplemented, "method GetNotification not implemented")
-}
-
-func RegisterNotificationServer(s *grpc.Server, srv NotificationServer) {
-	s.RegisterService(&_Notification_serviceDesc, srv)
-}
-
-func _Notification_GetNotification_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(NotificationRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(NotificationServer).GetNotification(m, &notificationGetNotificationServer{stream})
-}
-
-type Notification_GetNotificationServer interface {
-	Send(*NotificationReply) error
-	grpc.ServerStream
-}
-
-type notificationGetNotificationServer struct {
-	grpc.ServerStream
-}
-
-func (x *notificationGetNotificationServer) Send(m *NotificationReply) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-var _Notification_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "Notification",
-	HandlerType: (*NotificationServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "GetNotification",
-			Handler:       _Notification_GetNotification_Handler,
-			ServerStreams: true,
-		},
-	},
-	Metadata: "notification_server.proto",
 }

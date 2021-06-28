@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "github.com/kazshinohara/eats-api-demo/proto";
+option go_package = "github.com/kazshinohara/pb/eats-api-demo";
 
 service Notification {
   rpc GetNotification (NotificationRequest) returns (stream NotificationReply) {}
