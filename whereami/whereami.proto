@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option go_package = "github.com/kazshinohara/pb/whereami";
+
+import "google/protobuf/empty.proto";
+
+service Whereami {
+  rpc GetServerInfo (google.protobuf.Empty) returns (ServerInfo) {}
+}
+
+message ServerInfo {
+  string kind = 1;
+  string version = 2;
+  string region = 3;
+  string cluster = 4;
+  string hostname = 5;
+}
