@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+option go_package = "github.com/kazshinohara/pb/whereami";
+
+import "google/protobuf/empty.proto";
+
+service EchoService {
+  // all are unary gRPC
+  rpc GetAll(google.protobuf.Empty) returns (All);
+  rpc GetKind(google.protobuf.Empty) returns (Kind);
+  rpc GetVersion(google.protobuf.Empty) returns (Version);
+  rpc GetRegion(google.protobuf.Empty) returns (Region);
+  rpc GetCluster(google.protobuf.Empty) returns (Cluster);
+  rpc GetHostname(google.protobuf.Empty) returns (Hostname);
+  rpc GetSourceIp(google.protobuf.Empty) returns (SourceIp);
+  rpc GetHeader(google.protobuf.Empty) returns (Header);
+  //TODO
+  // Add server-side, client-side, bi-directional streaming gRPC
+}
+
+message All {
+  string kind = 1;
+  string version = 2;
+  string region = 3;
+  string cluster = 4;
+  string hostname = 5;
+  string source_ip =6;
+}
+
+message Kind {
+  string kind =1;
+}
+message Version {
+  string version =1;
+}
+message Region {
+  string region=1;
+}
+message Cluster {
+  string cluster =1;
+}
+message Hostname {
+  string hostname =1;
+}
+message SourceIp{
+  string source_ip =1;
+}
+message Header {
+  string header =1;
+}
