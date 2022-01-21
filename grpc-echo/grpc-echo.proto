@@ -13,7 +13,7 @@ service EchoService {
   rpc GetCluster(google.protobuf.Empty) returns (Cluster);
   rpc GetHostname(google.protobuf.Empty) returns (Hostname);
   rpc GetSourceIp(google.protobuf.Empty) returns (SourceIp);
-  rpc GetHeader(google.protobuf.Empty) returns (Header);
+  rpc GetHeader(HeaderName) returns (HeaderValue);
   //TODO
   // Add server-side, client-side, bi-directional streaming gRPC
 }
@@ -45,6 +45,9 @@ message Hostname {
 message SourceIp{
   string source_ip =1;
 }
-message Header {
-  string header =1;
+message HeaderName{
+  string request_header_name = 1;
+}
+message HeaderValue {
+  string request_header_value =1;
 }

@@ -31,7 +31,7 @@ type EchoServiceClient interface {
 	GetCluster(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Cluster, error)
 	GetHostname(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Hostname, error)
 	GetSourceIp(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*SourceIp, error)
-	GetHeader(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Header, error)
+	GetHeader(ctx context.Context, in *HeaderName, opts ...grpc.CallOption) (*HeaderValue, error)
 }
 
 type echoServiceClient struct {
@@ -105,8 +105,8 @@ func (c *echoServiceClient) GetSourceIp(ctx context.Context, in *emptypb.Empty, 
 	return out, nil
 }
 
-func (c *echoServiceClient) GetHeader(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Header, error) {
-	out := new(Header)
+func (c *echoServiceClient) GetHeader(ctx context.Context, in *HeaderName, opts ...grpc.CallOption) (*HeaderValue, error) {
+	out := new(HeaderValue)
 	err := c.cc.Invoke(ctx, "/EchoService/GetHeader", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -126,7 +126,7 @@ type EchoServiceServer interface {
 	GetCluster(context.Context, *emptypb.Empty) (*Cluster, error)
 	GetHostname(context.Context, *emptypb.Empty) (*Hostname, error)
 	GetSourceIp(context.Context, *emptypb.Empty) (*SourceIp, error)
-	GetHeader(context.Context, *emptypb.Empty) (*Header, error)
+	GetHeader(context.Context, *HeaderName) (*HeaderValue, error)
 	mustEmbedUnimplementedEchoServiceServer()
 }
 
@@ -155,7 +155,7 @@ func (UnimplementedEchoServiceServer) GetHostname(context.Context, *emptypb.Empt
 func (UnimplementedEchoServiceServer) GetSourceIp(context.Context, *emptypb.Empty) (*SourceIp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSourceIp not implemented")
 }
-func (UnimplementedEchoServiceServer) GetHeader(context.Context, *emptypb.Empty) (*Header, error) {
+func (UnimplementedEchoServiceServer) GetHeader(context.Context, *HeaderName) (*HeaderValue, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetHeader not implemented")
 }
 func (UnimplementedEchoServiceServer) mustEmbedUnimplementedEchoServiceServer() {}
@@ -298,7 +298,7 @@ func _EchoService_GetSourceIp_Handler(srv interface{}, ctx context.Context, dec 
 }
 
 func _EchoService_GetHeader_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(HeaderName)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -310,7 +310,7 @@ func _EchoService_GetHeader_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: "/EchoService/GetHeader",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EchoServiceServer).GetHeader(ctx, req.(*emptypb.Empty))
+		return srv.(EchoServiceServer).GetHeader(ctx, req.(*HeaderName))
 	}
 	return interceptor(ctx, in, info, handler)
 }
