@@ -5,7 +5,7 @@ option go_package = "github.com/kazshinohara/pb/whereami";
 import "google/protobuf/empty.proto";
 
 service EchoService {
-  // all are unary gRPC
+  // Unary RPC
   rpc GetAll(google.protobuf.Empty) returns (All);
   rpc GetKind(google.protobuf.Empty) returns (Kind);
   rpc GetVersion(google.protobuf.Empty) returns (Version);
@@ -14,8 +14,9 @@ service EchoService {
   rpc GetHostname(google.protobuf.Empty) returns (Hostname);
   rpc GetSourceIp(google.protobuf.Empty) returns (SourceIp);
   rpc GetHeader(HeaderName) returns (HeaderValue);
-  //TODO
-  // Add server-side, client-side, bi-directional streaming gRPC
+  // Server streaming RPC
+  rpc GetHostnameServerStream(google.protobuf.Empty) returns (Hostname);
+  //TODO Add client, bi-directional streaming gRPC
 }
 
 message All {

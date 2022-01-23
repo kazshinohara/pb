@@ -23,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type EchoServiceClient interface {
-	// all are unary gRPC
+	// Unary RPC
 	GetAll(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*All, error)
 	GetKind(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Kind, error)
 	GetVersion(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Version, error)
@@ -32,6 +32,8 @@ type EchoServiceClient interface {
 	GetHostname(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Hostname, error)
 	GetSourceIp(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*SourceIp, error)
 	GetHeader(ctx context.Context, in *HeaderName, opts ...grpc.CallOption) (*HeaderValue, error)
+	// Server streaming RPC
+	GetHostnameServerStream(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Hostname, error)
 }
 
 type echoServiceClient struct {
@@ -114,11 +116,20 @@ func (c *echoServiceClient) GetHeader(ctx context.Context, in *HeaderName, opts 
 	return out, nil
 }
 
+func (c *echoServiceClient) GetHostnameServerStream(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Hostname, error) {
+	out := new(Hostname)
+	err := c.cc.Invoke(ctx, "/EchoService/GetHostnameServerStream", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // EchoServiceServer is the server API for EchoService service.
 // All implementations must embed UnimplementedEchoServiceServer
 // for forward compatibility
 type EchoServiceServer interface {
-	// all are unary gRPC
+	// Unary RPC
 	GetAll(context.Context, *emptypb.Empty) (*All, error)
 	GetKind(context.Context, *emptypb.Empty) (*Kind, error)
 	GetVersion(context.Context, *emptypb.Empty) (*Version, error)
@@ -127,6 +138,8 @@ type EchoServiceServer interface {
 	GetHostname(context.Context, *emptypb.Empty) (*Hostname, error)
 	GetSourceIp(context.Context, *emptypb.Empty) (*SourceIp, error)
 	GetHeader(context.Context, *HeaderName) (*HeaderValue, error)
+	// Server streaming RPC
+	GetHostnameServerStream(context.Context, *emptypb.Empty) (*Hostname, error)
 	mustEmbedUnimplementedEchoServiceServer()
 }
 
@@ -157,6 +170,9 @@ func (UnimplementedEchoServiceServer) GetSourceIp(context.Context, *emptypb.Empt
 }
 func (UnimplementedEchoServiceServer) GetHeader(context.Context, *HeaderName) (*HeaderValue, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetHeader not implemented")
+}
+func (UnimplementedEchoServiceServer) GetHostnameServerStream(context.Context, *emptypb.Empty) (*Hostname, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetHostnameServerStream not implemented")
 }
 func (UnimplementedEchoServiceServer) mustEmbedUnimplementedEchoServiceServer() {}
 
@@ -315,6 +331,24 @@ func _EchoService_GetHeader_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _EchoService_GetHostnameServerStream_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EchoServiceServer).GetHostnameServerStream(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/EchoService/GetHostnameServerStream",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EchoServiceServer).GetHostnameServerStream(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // EchoService_ServiceDesc is the grpc.ServiceDesc for EchoService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -353,6 +387,10 @@ var EchoService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetHeader",
 			Handler:    _EchoService_GetHeader_Handler,
+		},
+		{
+			MethodName: "GetHostnameServerStream",
+			Handler:    _EchoService_GetHostnameServerStream_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
