@@ -33,7 +33,7 @@ type EchoServiceClient interface {
 	GetSourceIp(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*SourceIp, error)
 	GetHeader(ctx context.Context, in *HeaderName, opts ...grpc.CallOption) (*HeaderValue, error)
 	// Server streaming RPC
-	GetHostnameServerStream(ctx context.Context, in *ServerStreamConfig, opts ...grpc.CallOption) (*Hostname, error)
+	GetHostnameServerStream(ctx context.Context, in *ServerStreamConfig, opts ...grpc.CallOption) (EchoService_GetHostnameServerStreamClient, error)
 }
 
 type echoServiceClient struct {
@@ -116,13 +116,36 @@ func (c *echoServiceClient) GetHeader(ctx context.Context, in *HeaderName, opts 
 	return out, nil
 }
 
-func (c *echoServiceClient) GetHostnameServerStream(ctx context.Context, in *ServerStreamConfig, opts ...grpc.CallOption) (*Hostname, error) {
-	out := new(Hostname)
-	err := c.cc.Invoke(ctx, "/EchoService/GetHostnameServerStream", in, out, opts...)
+func (c *echoServiceClient) GetHostnameServerStream(ctx context.Context, in *ServerStreamConfig, opts ...grpc.CallOption) (EchoService_GetHostnameServerStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &EchoService_ServiceDesc.Streams[0], "/EchoService/GetHostnameServerStream", opts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &echoServiceGetHostnameServerStreamClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type EchoService_GetHostnameServerStreamClient interface {
+	Recv() (*Hostname, error)
+	grpc.ClientStream
+}
+
+type echoServiceGetHostnameServerStreamClient struct {
+	grpc.ClientStream
+}
+
+func (x *echoServiceGetHostnameServerStreamClient) Recv() (*Hostname, error) {
+	m := new(Hostname)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 // EchoServiceServer is the server API for EchoService service.
@@ -139,7 +162,7 @@ type EchoServiceServer interface {
 	GetSourceIp(context.Context, *emptypb.Empty) (*SourceIp, error)
 	GetHeader(context.Context, *HeaderName) (*HeaderValue, error)
 	// Server streaming RPC
-	GetHostnameServerStream(context.Context, *ServerStreamConfig) (*Hostname, error)
+	GetHostnameServerStream(*ServerStreamConfig, EchoService_GetHostnameServerStreamServer) error
 	mustEmbedUnimplementedEchoServiceServer()
 }
 
@@ -171,8 +194,8 @@ func (UnimplementedEchoServiceServer) GetSourceIp(context.Context, *emptypb.Empt
 func (UnimplementedEchoServiceServer) GetHeader(context.Context, *HeaderName) (*HeaderValue, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetHeader not implemented")
 }
-func (UnimplementedEchoServiceServer) GetHostnameServerStream(context.Context, *ServerStreamConfig) (*Hostname, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetHostnameServerStream not implemented")
+func (UnimplementedEchoServiceServer) GetHostnameServerStream(*ServerStreamConfig, EchoService_GetHostnameServerStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method GetHostnameServerStream not implemented")
 }
 func (UnimplementedEchoServiceServer) mustEmbedUnimplementedEchoServiceServer() {}
 
@@ -331,22 +354,25 @@ func _EchoService_GetHeader_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _EchoService_GetHostnameServerStream_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ServerStreamConfig)
-	if err := dec(in); err != nil {
-		return nil, err
+func _EchoService_GetHostnameServerStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(ServerStreamConfig)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
 	}
-	if interceptor == nil {
-		return srv.(EchoServiceServer).GetHostnameServerStream(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/EchoService/GetHostnameServerStream",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EchoServiceServer).GetHostnameServerStream(ctx, req.(*ServerStreamConfig))
-	}
-	return interceptor(ctx, in, info, handler)
+	return srv.(EchoServiceServer).GetHostnameServerStream(m, &echoServiceGetHostnameServerStreamServer{stream})
+}
+
+type EchoService_GetHostnameServerStreamServer interface {
+	Send(*Hostname) error
+	grpc.ServerStream
+}
+
+type echoServiceGetHostnameServerStreamServer struct {
+	grpc.ServerStream
+}
+
+func (x *echoServiceGetHostnameServerStreamServer) Send(m *Hostname) error {
+	return x.ServerStream.SendMsg(m)
 }
 
 // EchoService_ServiceDesc is the grpc.ServiceDesc for EchoService service.
@@ -388,11 +414,13 @@ var EchoService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "GetHeader",
 			Handler:    _EchoService_GetHeader_Handler,
 		},
+	},
+	Streams: []grpc.StreamDesc{
 		{
-			MethodName: "GetHostnameServerStream",
-			Handler:    _EchoService_GetHostnameServerStream_Handler,
+			StreamName:    "GetHostnameServerStream",
+			Handler:       _EchoService_GetHostnameServerStream_Handler,
+			ServerStreams: true,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
 	Metadata: "grpc-echo.proto",
 }

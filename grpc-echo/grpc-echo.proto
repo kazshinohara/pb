@@ -15,7 +15,7 @@ service EchoService {
   rpc GetSourceIp(google.protobuf.Empty) returns (SourceIp);
   rpc GetHeader(HeaderName) returns (HeaderValue);
   // Server streaming RPC
-  rpc GetHostnameServerStream(ServerStreamConfig) returns (Hostname);
+  rpc GetHostnameServerStream(ServerStreamConfig) returns (stream Hostname);
   //TODO Add client, bi-directional streaming gRPC
 }
 
