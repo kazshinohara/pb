@@ -62,5 +62,5 @@ message HeaderValue {
 
 message ServerStreamConfig{
   int32 interval =1;
-  int32 number_of_request =2;
+  int32 number_of_response =2;
 }
