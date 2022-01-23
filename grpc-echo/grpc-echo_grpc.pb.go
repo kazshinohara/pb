@@ -4,7 +4,7 @@
 // - protoc             v3.17.3
 // source: grpc-echo.proto
 
-package whereami
+package grpc_echo
 
 import (
 	context "context"
@@ -33,7 +33,7 @@ type EchoServiceClient interface {
 	GetSourceIp(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*SourceIp, error)
 	GetHeader(ctx context.Context, in *HeaderName, opts ...grpc.CallOption) (*HeaderValue, error)
 	// Server streaming RPC
-	GetHostnameServerStream(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Hostname, error)
+	GetHostnameServerStream(ctx context.Context, in *ServerStreamConfig, opts ...grpc.CallOption) (*Hostname, error)
 }
 
 type echoServiceClient struct {
@@ -116,7 +116,7 @@ func (c *echoServiceClient) GetHeader(ctx context.Context, in *HeaderName, opts 
 	return out, nil
 }
 
-func (c *echoServiceClient) GetHostnameServerStream(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Hostname, error) {
+func (c *echoServiceClient) GetHostnameServerStream(ctx context.Context, in *ServerStreamConfig, opts ...grpc.CallOption) (*Hostname, error) {
 	out := new(Hostname)
 	err := c.cc.Invoke(ctx, "/EchoService/GetHostnameServerStream", in, out, opts...)
 	if err != nil {
@@ -139,7 +139,7 @@ type EchoServiceServer interface {
 	GetSourceIp(context.Context, *emptypb.Empty) (*SourceIp, error)
 	GetHeader(context.Context, *HeaderName) (*HeaderValue, error)
 	// Server streaming RPC
-	GetHostnameServerStream(context.Context, *emptypb.Empty) (*Hostname, error)
+	GetHostnameServerStream(context.Context, *ServerStreamConfig) (*Hostname, error)
 	mustEmbedUnimplementedEchoServiceServer()
 }
 
@@ -171,7 +171,7 @@ func (UnimplementedEchoServiceServer) GetSourceIp(context.Context, *emptypb.Empt
 func (UnimplementedEchoServiceServer) GetHeader(context.Context, *HeaderName) (*HeaderValue, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetHeader not implemented")
 }
-func (UnimplementedEchoServiceServer) GetHostnameServerStream(context.Context, *emptypb.Empty) (*Hostname, error) {
+func (UnimplementedEchoServiceServer) GetHostnameServerStream(context.Context, *ServerStreamConfig) (*Hostname, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetHostnameServerStream not implemented")
 }
 func (UnimplementedEchoServiceServer) mustEmbedUnimplementedEchoServiceServer() {}
@@ -332,7 +332,7 @@ func _EchoService_GetHeader_Handler(srv interface{}, ctx context.Context, dec fu
 }
 
 func _EchoService_GetHostnameServerStream_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(ServerStreamConfig)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -344,7 +344,7 @@ func _EchoService_GetHostnameServerStream_Handler(srv interface{}, ctx context.C
 		FullMethod: "/EchoService/GetHostnameServerStream",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EchoServiceServer).GetHostnameServerStream(ctx, req.(*emptypb.Empty))
+		return srv.(EchoServiceServer).GetHostnameServerStream(ctx, req.(*ServerStreamConfig))
 	}
 	return interceptor(ctx, in, info, handler)
 }
