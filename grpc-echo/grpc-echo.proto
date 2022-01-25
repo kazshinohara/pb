@@ -46,6 +46,7 @@ message Cluster {
 
 message Hostname {
   string hostname =1;
+  string timestamp =2; // For failover test
 }
 
 message SourceIp{
