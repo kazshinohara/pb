@@ -29,6 +29,7 @@ type EchoServiceClient interface {
 	GetVersion(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Version, error)
 	GetRegion(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Region, error)
 	GetCluster(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Cluster, error)
+	GetInstanceId(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*InstanceId, error)
 	GetHostname(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Hostname, error)
 	GetSourceIp(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*SourceIp, error)
 	GetHeader(ctx context.Context, in *HeaderName, opts ...grpc.CallOption) (*HeaderValue, error)
@@ -83,6 +84,15 @@ func (c *echoServiceClient) GetRegion(ctx context.Context, in *emptypb.Empty, op
 func (c *echoServiceClient) GetCluster(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Cluster, error) {
 	out := new(Cluster)
 	err := c.cc.Invoke(ctx, "/EchoService/GetCluster", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *echoServiceClient) GetInstanceId(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*InstanceId, error) {
+	out := new(InstanceId)
+	err := c.cc.Invoke(ctx, "/EchoService/GetInstanceId", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -158,6 +168,7 @@ type EchoServiceServer interface {
 	GetVersion(context.Context, *emptypb.Empty) (*Version, error)
 	GetRegion(context.Context, *emptypb.Empty) (*Region, error)
 	GetCluster(context.Context, *emptypb.Empty) (*Cluster, error)
+	GetInstanceId(context.Context, *emptypb.Empty) (*InstanceId, error)
 	GetHostname(context.Context, *emptypb.Empty) (*Hostname, error)
 	GetSourceIp(context.Context, *emptypb.Empty) (*SourceIp, error)
 	GetHeader(context.Context, *HeaderName) (*HeaderValue, error)
@@ -184,6 +195,9 @@ func (UnimplementedEchoServiceServer) GetRegion(context.Context, *emptypb.Empty)
 }
 func (UnimplementedEchoServiceServer) GetCluster(context.Context, *emptypb.Empty) (*Cluster, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCluster not implemented")
+}
+func (UnimplementedEchoServiceServer) GetInstanceId(context.Context, *emptypb.Empty) (*InstanceId, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetInstanceId not implemented")
 }
 func (UnimplementedEchoServiceServer) GetHostname(context.Context, *emptypb.Empty) (*Hostname, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetHostname not implemented")
@@ -300,6 +314,24 @@ func _EchoService_GetCluster_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _EchoService_GetInstanceId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EchoServiceServer).GetInstanceId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/EchoService/GetInstanceId",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EchoServiceServer).GetInstanceId(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _EchoService_GetHostname_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
@@ -401,6 +433,10 @@ var EchoService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetCluster",
 			Handler:    _EchoService_GetCluster_Handler,
+		},
+		{
+			MethodName: "GetInstanceId",
+			Handler:    _EchoService_GetInstanceId_Handler,
 		},
 		{
 			MethodName: "GetHostname",

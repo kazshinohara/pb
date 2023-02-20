@@ -11,6 +11,7 @@ service EchoService {
   rpc GetVersion(google.protobuf.Empty) returns (Version);
   rpc GetRegion(google.protobuf.Empty) returns (Region);
   rpc GetCluster(google.protobuf.Empty) returns (Cluster);
+  rpc GetInstanceId(google.protobuf.Empty) returns (InstanceId);
   rpc GetHostname(google.protobuf.Empty) returns (Hostname);
   rpc GetSourceIp(google.protobuf.Empty) returns (SourceIp);
   rpc GetHeader(HeaderName) returns (HeaderValue);
@@ -24,8 +25,9 @@ message All {
   string version = 2;
   string region = 3;
   string cluster = 4;
-  string hostname = 5;
-  string source_ip =6;
+  string instance_id = 5;
+  string hostname = 6;
+  string source_ip =7;
 }
 
 message Kind {
